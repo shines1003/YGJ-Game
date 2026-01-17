@@ -1,33 +1,80 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>미소녀 영걸전 온라인</title>
+    <title>미소녀 영걸전: 온라인</title>
     <style>
-        body { margin: 0; background: #000; color: #fff; font-family: 'Malgun Gothic', sans-serif; }
+        /* 아까 말한 그 '멋진' 스타일들을 여기 다 담았습니다 */
+        body { margin: 0; background-color: #000; color: #fff; font-family: 'Malgun Gothic', sans-serif; overflow: hidden; }
         .hidden { display: none !important; }
-        #auth-section { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
-        #game-container { width: 960px; height: 640px; margin: 0 auto; position: relative; border: 2px solid #d4af37; }
-        #map-view { width: 100%; height: 500px; background: #222; position: relative; overflow: hidden; }
-        #message-window { height: 140px; background: #000040; border-top: 3px solid #d4af37; padding: 20px; box-sizing: border-box; cursor: pointer; }
-        #speaker-tag { color: #ffd700; font-weight: bold; font-size: 20px; margin-bottom: 10px; }
-        #content-area { color: #fff; font-size: 18px; line-height: 1.5; }
-        .btn { padding: 10px 20px; cursor: pointer; background: #d4af37; border: none; font-weight: bold; }
+
+        /* 타이틀 화면 디자인 */
+        #auth-section {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            height: 100vh; background: radial-gradient(circle, #1a1a1a 0%, #000 100%);
+        }
+        .dot-title {
+            font-size: 4em; color: #d4af37; text-shadow: 3px 3px 0 #000, 5px 5px 15px #d4af37;
+            margin-bottom: 40px; font-weight: 900;
+        }
+        .login-box {
+            background: rgba(30, 30, 30, 0.9); border: 3px solid #d4af37;
+            padding: 30px; width: 350px; text-align: center;
+        }
+        input {
+            width: 100%; padding: 12px; margin-bottom: 10px; background: #111;
+            border: 1px solid #d4af37; color: #fff; box-sizing: border-box;
+        }
+        .btn-group { display: flex; gap: 10px; margin-top: 10px; }
+        .btn {
+            flex: 1; padding: 12px; background: #d4af37; border: none;
+            color: #000; font-weight: bold; cursor: pointer;
+        }
+
+        /* 게임 실행 화면 */
+        #game-container { width: 1000px; height: 700px; margin: 20px auto; position: relative; border: 4px double #d4af37; }
+        #map-view { width: 75%; height: 500px; background: #222; float: left; position: relative; }
+        
+        /* 사이드바 (부대 정보) */
+        #side-panel { 
+            width: 25%; height: 500px; background: #000080; float: left; 
+            border-left: 2px solid #d4af37; padding: 15px; box-sizing: border-box; 
+        }
+
+        /* 대사창 (가독성 보정) */
+        #message-window {
+            clear: both; width: 100%; height: 200px; background: #000030;
+            border-top: 3px solid #d4af37; padding: 25px; box-sizing: border-box; cursor: pointer;
+        }
+        #speaker-tag { color: #ffd700; font-size: 24px; font-weight: bold; margin-bottom: 10px; }
+        #content-area { color: #fff; font-size: 20px; line-height: 1.6; }
     </style>
 </head>
 <body>
+
     <div id="auth-section">
-        <h1>YOUNGGIRL RPG</h1>
-        <input type="text" id="email" placeholder="이메일" value="test@test.test">
-        <input type="password" id="pw" placeholder="비밀번호">
-        <button class="btn" onclick="Auth.signIn()">로그인</button>
+        <div class="dot-title">YOUNGGIRL RPG</div>
+        <div class="login-box">
+            <input type="text" id="email" placeholder="이메일" value="test@test.test">
+            <input type="password" id="pw" placeholder="비밀번호">
+            <div class="btn-group">
+                <button class="btn" onclick="Auth.signIn()">로그인</button>
+                <button class="btn" onclick="Auth.signUp()" style="background:#555; color:#fff;">회원가입</button>
+            </div>
+        </div>
     </div>
 
     <div id="game-container" class="hidden">
         <div id="map-view"></div>
+        <div id="side-panel">
+            <h3 style="color:#ffd700;">부대 정보</h3>
+            <p>이름: <span id="info-name">-</span></p>
+            <p>병과: <span id="info-class">-</span></p>
+            <p>병력: <span id="info-hp">-</span></p>
+        </div>
         <div id="message-window" onclick="Game.handleInteraction()">
-            <div id="speaker-tag"></div>
-            <div id="content-area">로그인 성공! 화면을 클릭하여 시작하세요.</div>
+            <div id="speaker-tag">시스템</div>
+            <div id="content-area">접속 중입니다...</div>
         </div>
     </div>
 
