@@ -1,34 +1,87 @@
-<div id="start-screen" class="login-box">
-    <h3>YGJ Online</h3>
-    <p>간편하게 시작하세요</p>
-    
-    <button onclick="signInWithGoogle()" style="background: white; color: #444; font-weight: bold; margin-bottom: 15px;">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" width="18" style="vertical-align: middle; margin-right: 8px;">
-        Google 계정으로 로그인
-    </button>
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>YGJ Online</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #000;
+            /* 배경 이미지가 있다면 여기에 넣겠지만, 일단 검정색으로! */
+            color: #d4af37; /* 삼국지 느낌의 금색 */
+            font-family: 'serif';
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
 
-    <hr style="border: 0.5px solid #444; margin: 20px 0;">
+        h1 {
+            font-size: 80px;
+            margin: 0;
+            text-shadow: 0 0 20px #ff0000; /* 붉은 광채 */
+            letter-spacing: 15px;
+        }
 
-    <input type="email" id="email" placeholder="이메일 주소">
-    <input type="password" id="password" placeholder="비밀번호">
-    <div style="display: flex; gap: 5px; justify-content: center;">
-        <button onclick="handleLogin()">로그인</button>
-        <button onclick="handleSignUp()">회원가입</button>
+        .subtitle {
+            font-size: 20px;
+            color: #aaa;
+            margin-bottom: 50px;
+        }
+
+        .menu-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .menu-item {
+            font-size: 24px;
+            padding: 15px 60px;
+            background: rgba(93, 64, 55, 0.7); /* 고전적인 갈색톤 */
+            border: 2px solid #d4af37;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            color: #fff;
+            text-decoration: none;
+        }
+
+        .menu-item:hover {
+            background: #d4af37;
+            color: #000;
+            transform: scale(1.1);
+        }
+
+        /* 깜빡이는 효과 */
+        .press-start {
+            margin-top: 30px;
+            animation: blink 1.5s infinite;
+            color: #fff;
+        }
+
+        @keyframes blink {
+            0% { opacity: 0; }
+            50% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>YGJ Online</h1>
+    <div class="subtitle">영웅들의 전쟁, 삼국지 전략의 정점</div>
+
+    <div class="menu-container">
+        <div class="menu-item" onclick="alert('게임을 시작합니다!')">게임 시작</div>
+        <div class="menu-item" onclick="alert('설정창입니다.')">환경 설정</div>
+        <div class="menu-item" onclick="window.close()">종료</div>
     </div>
-</div>
 
-<script>
-    // ... 기존 supabase 설정 코드 아래에 추가 ...
+    <div class="press-start">PRESS ANY KEY TO START</div>
 
-    async function signInWithGoogle() {
-        const { data, error } = await _supabase.auth.signInWithOAuth({
-            provider: 'google',
-            options: {
-                // 로그인 완료 후 다시 돌아올 주소 (내 넷리파이 주소)
-                redirectTo: window.location.origin 
-            }
-        });
-        
-        if (error) alert("구글 로그인 실패: " + error.message);
-    }
-</script>
+</body>
+</html>
