@@ -1,107 +1,53 @@
-/* 기본 배경 설정 */
+/* style.css */
 body {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background: #1a1a1a;
-    color: white;
-    font-family: 'Malgun Gothic', sans-serif;
-    padding: 10px;
-    margin: 0;
-    overflow: hidden;
+    margin: 0; background-color: #000;
+    display: flex; justify-content: center; align-items: center;
+    height: 100vh; color: #fff; overflow: hidden;
 }
 
-/* 상단 정보 바 */
-#log-bar {
-    margin-bottom: 10px;
-    padding: 12px;
-    background: #212121;
-    width: 840px;
-    text-align: center;
-    color: #ffeb3b;
-    border: 2px solid #ffca28;
-    font-weight: bold;
-}
-
-/* 게임 화면 컨테이너 */
 #game-container {
-    display: flex;
-    border: 5px solid #8b5a2b;
-    background: #4e342e;
-    padding: 10px;
+    width: 960px; height: 640px;
+    border: 4px solid #5d4037;
+    display: flex; flex-direction: column;
     position: relative;
 }
 
-canvas {
-    background-color: #5d4037;
-    border: 2px solid #3e2723;
-    cursor: pointer;
+/* 픽셀 퍼펙트 렌더링 설정 */
+canvas, img, .tile, .sprite {
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
 }
 
-/* 우측 상태창 패널 */
-#side-panel {
-    width: 220px;
-    margin-left: 15px;
-}
-
-#status-window {
-    background: #000080;
-    border: 3px double #bbdefb;
-    padding: 15px;
-    height: 350px;
-    font-size: 13px;
-}
-
-#scene-title {
-    text-align: center;
-    color: #ffca28;
-    font-weight: bold;
-    margin-bottom: 15px;
-}
-
-.stat-line {
-    margin-bottom: 8px;
-    border-bottom: 1px solid #1565c0;
-    padding-bottom: 2px;
+#viewport {
+    flex: 1; position: relative; background: #222;
     display: flex;
-    justify-content: space-between;
 }
 
-/* 하단 대화창 */
-#dialog-layer {
-    display: none;
-    position: absolute;
-    bottom: 25px;
-    left: 20px;
-    width: 570px;
-    height: 140px;
-    background: rgba(0, 0, 50, 0.95);
-    border: 3px solid #ffffff;
-    padding: 20px;
-    box-sizing: border-box;
-    z-index: 100;
+#map-view {
+    flex: 1; position: relative; overflow: hidden;
 }
 
-#speaker-name {
-    color: #00fbff;
-    font-weight: bold;
-    font-size: 18px;
-    margin-bottom: 8px;
+/* 영걸전 스타일 사이드바 */
+.ui-panel {
+    width: 220px; background: #000080;
+    border-left: 3px solid #d4af37; padding: 15px;
+    box-sizing: border-box; font-size: 14px;
 }
 
-.click-guide {
-    text-align: right;
-    font-size: 11px;
-    color: #aaa;
-    margin-top: 10px;
+#message-window {
+    height: 140px; background: rgba(0, 0, 40, 0.9);
+    border-top: 3px solid #d4af37; padding: 20px;
+    position: relative; cursor: pointer;
 }
 
-/* 대화용 캐릭터 스탠딩 이미지 */
-#portrait {
-    position: absolute;
-    bottom: 140px; /* 대화창 바로 위 */
-    right: 50px;
-    height: 400px; /* 크게 표시 */
-    display: none;
-    z-index: 50;
+#speaker-tag {
+    color: #d4af37; font-weight: bold; margin-bottom: 8px; font-size: 18px;
 }
+
+#next-indicator {
+    position: absolute; right: 20px; bottom: 15px;
+    animation: blink 1s infinite; color: #d4af37;
+}
+
+@keyframes blink { 0%, 100% { opacity: 0; } 50% { opacity: 1; } }
