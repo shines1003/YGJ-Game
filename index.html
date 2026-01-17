@@ -1,49 +1,37 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html>
 <head>
     <meta charset="UTF-8">
     <title>미소녀 영걸전 온라인</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body { margin: 0; background: #000; color: #fff; font-family: 'Malgun Gothic', sans-serif; }
+        .hidden { display: none !important; }
+        #auth-section { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
+        #game-container { width: 960px; height: 640px; margin: 0 auto; position: relative; border: 2px solid #d4af37; }
+        #map-view { width: 100%; height: 500px; background: #222; position: relative; overflow: hidden; }
+        #message-window { height: 140px; background: #000040; border-top: 3px solid #d4af37; padding: 20px; box-sizing: border-box; cursor: pointer; }
+        #speaker-tag { color: #ffd700; font-weight: bold; font-size: 20px; margin-bottom: 10px; }
+        #content-area { color: #fff; font-size: 18px; line-height: 1.5; }
+        .btn { padding: 10px 20px; cursor: pointer; background: #d4af37; border: none; font-weight: bold; }
+    </style>
 </head>
 <body>
-    <div id="auth-section" class="auth-overlay">
-        <div class="login-box">
-            <h1 class="dot-title">YOUNGGIRL RPG</h1>
-            <input type="text" id="email" placeholder="이메일" value="test@test.test">
-            <input type="password" id="pw" placeholder="비밀번호">
-            <div class="btn-group">
-                <button class="btn" onclick="Auth.signIn()">로그인</button>
-                <button class="btn sub" onclick="Auth.signUp()">회원가입</button>
-            </div>
-        </div>
+    <div id="auth-section">
+        <h1>YOUNGGIRL RPG</h1>
+        <input type="text" id="email" placeholder="이메일" value="test@test.test">
+        <input type="password" id="pw" placeholder="비밀번호">
+        <button class="btn" onclick="Auth.signIn()">로그인</button>
     </div>
 
-    <div id="game-container">
-        <div id="viewport">
-            <div id="map-view"></div> <div id="side-panel" class="ui-panel hidden">
-                <div class="panel-header">부대 정보</div>
-                <div id="portrait-box"></div>
-                <div class="unit-stats">
-                    <p>이름: <span id="info-name">-</span></p>
-                    <p>병과: <span id="info-class">-</span></p>
-                    <div class="hp-bar-bg"><div id="info-hp-fill" class="hp-bar-fill"></div></div>
-                </div>
-            </div>
-        </div>
-
+    <div id="game-container" class="hidden">
+        <div id="map-view"></div>
         <div id="message-window" onclick="Game.handleInteraction()">
-            <div id="msg-portrait-container">
-                <img id="speaker-portrait" src="" class="hidden">
-            </div>
-            <div id="text-container">
-                <div id="speaker-tag"></div>
-                <div id="content-area">로그인 후 시작해 주세요.</div>
-            </div>
-            <div id="next-indicator">▼</div>
+            <div id="speaker-tag"></div>
+            <div id="content-area">로그인 성공! 화면을 클릭하여 시작하세요.</div>
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/constants.js"></script>
     <script src="js/engine.js"></script>
     <script src="js/auth.js"></script>
