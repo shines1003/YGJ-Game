@@ -2,29 +2,29 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>미소녀 영걸전: 온라인</title>
+    <title>미소녀 영걸전 온라인</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-
-    <div id="auth-section" class="ui-overlay">
+    <div id="auth-section" class="auth-overlay">
         <div class="login-box">
             <h1 class="dot-title">YOUNGGIRL RPG</h1>
-            <input type="text" id="email" placeholder="이메일">
+            <input type="text" id="email" placeholder="이메일" value="test@test.test">
             <input type="password" id="pw" placeholder="비밀번호">
-            <button class="btn" onclick="Auth.signIn()">로그인</button>
-            <button class="btn sub-btn" onclick="Auth.signUp()">회원가입</button>
+            <div class="btn-group">
+                <button class="btn" onclick="Auth.signIn()">로그인</button>
+                <button class="btn sub" onclick="Auth.signUp()">회원가입</button>
+            </div>
         </div>
     </div>
 
-    <div id="game-container" class="hidden">
+    <div id="game-container">
         <div id="viewport">
-            <div id="map-view"></div>
-            
-            <div id="side-panel" class="ui-panel hidden">
+            <div id="map-view"></div> <div id="side-panel" class="ui-panel hidden">
                 <div class="panel-header">부대 정보</div>
-                <div id="unit-info-display">
+                <div id="portrait-box"></div>
+                <div class="unit-stats">
                     <p>이름: <span id="info-name">-</span></p>
                     <p>병과: <span id="info-class">-</span></p>
                     <div class="hp-bar-bg"><div id="info-hp-fill" class="hp-bar-fill"></div></div>
@@ -33,12 +33,12 @@
         </div>
 
         <div id="message-window" onclick="Game.handleInteraction()">
-            <div id="portrait-container">
+            <div id="msg-portrait-container">
                 <img id="speaker-portrait" src="" class="hidden">
             </div>
             <div id="text-container">
                 <div id="speaker-tag"></div>
-                <div id="content-area">게임을 불러오는 중...</div>
+                <div id="content-area">로그인 후 시작해 주세요.</div>
             </div>
             <div id="next-indicator">▼</div>
         </div>

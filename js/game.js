@@ -1,38 +1,45 @@
 const Game = {
-    init() {
-        // 첫 시작: 스토리 장면
-        this.loadScene("SCENE_START");
+    currentScene: "SCENE_START",
+
+    // 로그인 성공 시 호출됨
+    start() {
+        document.getElementById('auth-section').classList.add('hidden');
+        this.loadScene(this.currentScene);
     },
 
     loadScene(sceneId) {
+        this.currentScene = sceneId;
         const data = STORY_FLOW[sceneId];
         const view = document.getElementById('map-view');
-        
+
+        // 1. 월드맵 화면 처리
         if (data.type === "WORLDMAP") {
-            // 월드맵 UI 출력
             view.innerHTML = `
-                <div class="worldmap-ui">
-                    <h2>천하 월드맵</h2>
+                <div class="worldmap-overlay" style="text-align:center; padding-top:100px;">
+                    <h2 style="color:#d4af37;">${data.content}</h2>
                     <button class="btn" onclick="Game.loadScene('VILLAGE_1')">평원현 입성</button>
                 </div>`;
-        } else if (data.type === "BATTLE") {
-            // 전투 화면 렌더링
-            Engine.renderMap('map-view', 10, 10, 'grass');
-            Engine.renderCharacter('map-view', { id:'yubi', row:5, col:2, asset:'yubi_sprite.png' });
-            document.getElementById('side-panel').classList.remove('hidden');
-        } else {
-            // 기본 스토리/마을 화면
-            Engine.renderMap('map-view', 8, 8, 'floor');
-            this.updateDialogue(data);
+            this.updateDialogue({ speaker: "시스템", content: "월드맵에 도착했습니다." });
+            return;
         }
+
+        // 2. 쿼터뷰 맵 렌더링 (마을/전투/스토리 공통)
+        const mapType = (data.type === "BATTLE") ? 'grass' : 'floor';
+        Engine.renderMap('map-view', 8, 8, mapType);
+
+        // 3. 캐릭터 배치
+        if (data.chars) {
+            data.chars.forEach(c => Engine.renderCharacter('map-view', c));
+        }
+
+        this.updateDialogue(data);
     },
 
     updateDialogue(data) {
-        document.getElementById('speaker-tag').innerText = data.speaker || "시스템";
+        document.getElementById('speaker-tag').innerText = data.speaker || "";
         document.getElementById('content-area').innerText = data.content;
-        
-        // 초상화 기능 추가
         const portrait = document.getElementById('speaker-portrait');
+        
         if (data.portrait) {
             portrait.src = `assets/${data.portrait}`;
             portrait.classList.remove('hidden');
@@ -42,10 +49,9 @@ const Game = {
     },
 
     handleInteraction() {
-        // 클릭 시 다음 씬으로 (constants.js의 next 참조)
-        const currentData = STORY_FLOW[this.currentScene];
-        if (currentData && currentData.next) {
-            this.loadScene(currentData.next);
+        const data = STORY_FLOW[this.currentScene];
+        if (data && data.next) {
+            this.loadScene(data.next);
         }
     }
 };

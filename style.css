@@ -1,53 +1,38 @@
-/* style.css */
-body {
-    margin: 0; background-color: #000;
-    display: flex; justify-content: center; align-items: center;
-    height: 100vh; color: #fff; overflow: hidden;
+/* 전체 레이아웃 */
+body { margin: 0; background: #000; overflow: hidden; font-family: 'serif'; }
+
+.auth-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.9); display: flex; justify-content: center; align-items: center;
+    z-index: 9999; /* 무조건 최상단 */
+}
+
+.login-box {
+    background: #1a1a1a; border: 3px solid #d4af37; padding: 40px;
+    text-align: center; color: #d4af37;
 }
 
 #game-container {
-    width: 960px; height: 640px;
-    border: 4px solid #5d4037;
-    display: flex; flex-direction: column;
-    position: relative;
+    width: 960px; height: 640px; margin: auto; position: relative;
+    display: flex; flex-direction: column; border: 2px solid #444;
 }
 
-/* 픽셀 퍼펙트 렌더링 설정 */
-canvas, img, .tile, .sprite {
+#viewport { flex: 1; position: relative; background: #111; display: flex; }
+#map-view { flex: 1; position: relative; overflow: hidden; }
+
+/* 2D 도트 최적화 */
+.tile, .sprite, #speaker-portrait {
     image-rendering: pixelated;
-    image-rendering: -moz-crisp-edges;
-    image-rendering: crisp-edges;
+    position: absolute;
 }
 
-#viewport {
-    flex: 1; position: relative; background: #222;
-    display: flex;
-}
-
-#map-view {
-    flex: 1; position: relative; overflow: hidden;
-}
-
-/* 영걸전 스타일 사이드바 */
-.ui-panel {
-    width: 220px; background: #000080;
-    border-left: 3px solid #d4af37; padding: 15px;
-    box-sizing: border-box; font-size: 14px;
-}
-
+/* 대사창 초상화 레이아웃 */
 #message-window {
-    height: 140px; background: rgba(0, 0, 40, 0.9);
-    border-top: 3px solid #d4af37; padding: 20px;
-    position: relative; cursor: pointer;
+    height: 140px; background: #000030; border-top: 3px solid #d4af37;
+    display: flex; padding: 15px; cursor: pointer;
 }
-
-#speaker-tag {
-    color: #d4af37; font-weight: bold; margin-bottom: 8px; font-size: 18px;
+#msg-portrait-container {
+    width: 100px; height: 100px; border: 1px solid #d4af37; margin-right: 15px;
 }
-
-#next-indicator {
-    position: absolute; right: 20px; bottom: 15px;
-    animation: blink 1s infinite; color: #d4af37;
-}
-
-@keyframes blink { 0%, 100% { opacity: 0; } 50% { opacity: 1; } }
+#speaker-portrait { width: 100px; height: 100px; }
+.hidden { display: none !important; }
