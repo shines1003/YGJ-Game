@@ -1,82 +1,51 @@
-/**
- * YGJ Online: 게임 흐름 제어 (Scene Manager)
- */
 const Game = {
-    currentScene: "SCENE_START",
-    
     init() {
-        console.log("게임 엔진 초기화...");
-        this.loadScene(this.currentScene);
+        // 첫 시작: 스토리 장면
+        this.loadScene("SCENE_START");
     },
 
-    /**
-     * 1. 장면 로드 함수
-     * @param {string} sceneId - constants.js의 STORY_FLOW 키값
-     */
     loadScene(sceneId) {
         const data = STORY_FLOW[sceneId];
-        if (!data) return;
-
-        this.currentScene = sceneId;
-
-        // 장면 타입에 따른 분기 처리
-        if (data.type === "BATTLE") {
-            this.startBattle(data);
-        } else if (data.type === "SELECT") {
-            this.showSelection(data);
+        const view = document.getElementById('map-view');
+        
+        if (data.type === "WORLDMAP") {
+            // 월드맵 UI 출력
+            view.innerHTML = `
+                <div class="worldmap-ui">
+                    <h2>천하 월드맵</h2>
+                    <button class="btn" onclick="Game.loadScene('VILLAGE_1')">평원현 입성</button>
+                </div>`;
+        } else if (data.type === "BATTLE") {
+            // 전투 화면 렌더링
+            Engine.renderMap('map-view', 10, 10, 'grass');
+            Engine.renderCharacter('map-view', { id:'yubi', row:5, col:2, asset:'yubi_sprite.png' });
+            document.getElementById('side-panel').classList.remove('hidden');
         } else {
-            this.showDialogue(data);
+            // 기본 스토리/마을 화면
+            Engine.renderMap('map-view', 8, 8, 'floor');
+            this.updateDialogue(data);
         }
     },
 
-    /**
-     * 2. 대사창 업데이트 (1.2 스토리)
-     */
-    showDialogue(data) {
-        document.getElementById('speaker').innerText = data.speaker;
-        document.getElementById('content').innerText = data.content;
+    updateDialogue(data) {
+        document.getElementById('speaker-tag').innerText = data.speaker || "시스템";
+        document.getElementById('content-area').innerText = data.content;
         
-        // 캐릭터가 있다면 렌더링 (engine.js 활용)
-        if (data.chars) {
-            Engine.renderMap('map-view', 6, 6); // 스토리용 작은 맵
-            data.chars.forEach(c => Engine.renderCharacter('map-view', c));
+        // 초상화 기능 추가
+        const portrait = document.getElementById('speaker-portrait');
+        if (data.portrait) {
+            portrait.src = `assets/${data.portrait}`;
+            portrait.classList.remove('hidden');
+        } else {
+            portrait.classList.add('hidden');
         }
     },
 
-    /**
-     * 3. 선택지 UI 생성 (스토리 분기)
-     */
-    showSelection(data) {
-        const contentBox = document.getElementById('content');
-        contentBox.innerHTML = `<p>${data.question}</p>`;
-        
-        data.options.forEach(opt => {
-            const btn = document.createElement('button');
-            btn.className = 'btn';
-            btn.style.width = 'auto';
-            btn.style.marginRight = '10px';
-            btn.innerText = opt.text;
-            btn.onclick = () => this.loadScene(opt.next);
-            contentBox.appendChild(btn);
-        });
-    },
-
-    /**
-     * 4. 전투 개시 (1.6 전투)
-     */
-    startBattle(data) {
-        // 전투용 큰 맵 렌더링
-        Engine.renderMap('map-view', 10, 10);
-        
-        // 아군(유비)과 적군 배치
-        Engine.renderCharacter('map-view', {
-            id: 'char_yubi', row: 5, col: 2, asset: CHARACTERS.YUBI.asset
-        });
-        
-        document.getElementById('speaker').innerText = "시스템";
-        document.getElementById('content').innerText = "전투가 시작되었습니다!";
+    handleInteraction() {
+        // 클릭 시 다음 씬으로 (constants.js의 next 참조)
+        const currentData = STORY_FLOW[this.currentScene];
+        if (currentData && currentData.next) {
+            this.loadScene(currentData.next);
+        }
     }
 };
-
-// 페이지 로드 시 게임 시작
-window.onload = () => Game.init();
