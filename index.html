@@ -3,201 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YGJ Online - Prototype</title>
+    <title>YGJ Online: 미소녀 영걸전 프로토타입</title>
+    <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <style>
-        :root { --gold: #d4af37; --bg: #000; }
-        body { margin: 0; background: var(--bg); color: var(--gold); font-family: 'serif'; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
-        .hidden { display: none !important; }
-        .box { background: rgba(42, 42, 42, 0.9); padding: 30px; border: 1px solid #444; border-radius: 10px; width: 350px; text-align: center; }
-        input { width: 100%; padding: 12px; margin-bottom: 15px; background: #1a1a1a; color: white; border: 1px solid var(--gold); box-sizing: border-box; }
-        .btn { width: 100%; padding: 12px; margin: 5px 0; border: 2px solid var(--gold); background: #5d4037; color: white; cursor: pointer; font-size: 16px; }
-        .btn:hover { background: var(--gold); color: black; }
-
-        /* 게임 화면 공통 */
-        .game-screen { width: 900px; height: 600px; background: #111; border: 4px solid var(--gold); position: relative; display: flex; flex-direction: column; }
-        .view-area { flex: 1; position: relative; overflow: hidden; display: flex; justify-content: center; align-items: center; perspective: 1000px; }
-        .text-box { height: 120px; background: rgba(0, 0, 0, 0.85); border-top: 2px solid var(--gold); padding: 20px; cursor: pointer; box-sizing: border-box; position: relative; }
-
-        /* 쿼터뷰(Isometric) 스타일 */
-        .iso-floor { display: grid; transform: rotateX(60deg) rotateZ(45deg); border: 2px solid #3e2723; }
-        .tile { border: 1px solid rgba(255,255,255,0.05); box-sizing: border-box; }
-        .char { position: absolute; font-size: 50px; transform: rotateZ(-45deg) rotateX(-60deg) translateY(-35px); transition: 0.3s; cursor: pointer; }
-        
-        /* 전투 UI */
-        .side-info { width: 200px; height: 100%; background: #000080; border-left: 2px solid var(--gold); padding: 15px; box-sizing: border-box; }
-        .hp-bar { width: 100%; height: 10px; background: red; margin-top: 5px; }
-        .hp-inner { height: 100%; background: cyan; }
-    </style>
 </head>
 <body>
 
-    <div id="auth-section" class="box">
-        <h1>YGJ Online</h1>
-        <input type="text" id="email" placeholder="이메일">
-        <input type="password" id="pw" placeholder="비밀번호">
-        <button class="btn" onclick="signIn()">로그인</button>
-        <button class="btn" style="font-size:12px; background:#333;" onclick="signUp()">회원가입</button>
-    </div>
-
-    <div id="menu-section" class="box hidden">
-        <button class="btn" onclick="startStory()">시작하기</button>
-        <button class="btn" onclick="alert('데이터를 불러옵니다.')">불러오기</button>
-        <button class="btn" style="background:#333;" onclick="location.reload()">로그아웃</button>
-    </div>
-
-    <div id="game-container" class="game-screen hidden">
-        <div id="main-view" class="view-area">
+    <div id="game-container">
+        <div id="viewport">
+            <div id="map-view">
+                </div>
+            
+            <div id="side-panel" class="ui-panel hidden">
+                <div class="panel-header">부대 정보</div>
+                <div id="unit-portrait"></div> <div class="unit-stats">
+                    <p><span class="label">이름:</span> <span id="info-name">-</span></p>
+                    <p><span class="label">병과:</span> <span id="info-class">-</span></p>
+                    <p><span class="label">병력:</span> <span id="info-hp">-</span></p>
+                    <div class="hp-bar-bg">
+                        <div id="info-hp-fill" class="hp-bar-fill"></div>
+                    </div>
+                </div>
             </div>
-        
-        <div id="side-panel" class="side-info hidden">
-            <h3 id="unit-name">부대 정보</h3>
-            <p id="unit-class">병과: -</p>
-            <p id="unit-hp">병력: -</p>
-            <div class="hp-bar"><div id="hp-fill" class="hp-inner"></div></div>
         </div>
 
-        <div class="text-box" onclick="handleInteraction()">
-            <strong id="speaker" style="color:var(--gold);">시스템</strong>
-            <p id="content">게임이 시작됩니다.</p>
+        <div id="message-window" onclick="Game.handleInteraction()">
+            <div id="speaker-tag"></div>
+            <div id="content-area">
+                게임을 불러오는 중입니다...
+            </div>
+            <div id="next-indicator">▼</div>
         </div>
     </div>
+
+    <script src="js/constants.js"></script>
+    <script src="js/engine.js"></script>
+    <script src="js/game.js"></script>
+    <script src="js/auth.js"></script>
 
     <script>
-        const S_URL = "https://ycizbxlqgqguxxkkxugm.supabase.co";
-        const S_KEY = "sb_publishable_R-XE2JfZaSK0Zfkn_6wfHw_5kwl5kSe";
-        const _supabase = supabase.createClient(S_URL, S_KEY);
-
-        let gameState = "STORY"; // STORY, WORLDMAP, VILLAGE, BATTLE, ENDING
-        let storyStep = 0;
-
-        // --- 인증 로직 ---
-        async function signUp() {
-            const email = document.getElementById('email').value.trim();
-            const password = document.getElementById('pw').value;
-            const { error } = await _supabase.auth.signUp({ email, password });
-            alert(error ? error.message : "가입 완료! 로그인 해주세요.");
-        }
-
-        async function signIn() {
-            const email = document.getElementById('email').value.trim();
-            const password = document.getElementById('pw').value;
-            const { error } = await _supabase.auth.signInWithPassword({ email, password });
-            if (error) alert(error.message);
-            else {
-                document.getElementById('auth-section').classList.add('hidden');
-                document.getElementById('menu-section').classList.remove('hidden');
-            }
-        }
-
-        // --- 화면 전환 로직 (기획 7.1 반영) ---
-        function startStory() {
-            document.getElementById('menu-section').classList.add('hidden');
-            document.getElementById('game-container').classList.remove('hidden');
-            renderIsometricScene(6, 6, "#5d4037"); // 스토리 배경 (건물 내부)
-            updateStory();
-        }
-
-        function handleInteraction() {
-            if (gameState === "STORY") updateStory();
-            else if (gameState === "ENDING") location.reload();
-        }
-
-        function updateStory() {
-            const dialogues = [
-                { s: "유비", c: "드디어 때가 되었군. 한실을 어지럽히는 무리를 처단해야 하오.", chars: [{icon:'👑', r:3, c:3}] },
-                { s: "조조", c: "유비 공, 사수관에서 동탁의 군세가 북상하고 있소. 동행하겠소?", chars: [{icon:'👑', r:3, c:3}, {icon:'⚔️', r:3, c:4}] },
-                { s: "시스템", c: "스토리가 종료되었습니다. 월드맵으로 이동합니다.", chars: [] }
-            ];
-
-            if (storyStep < dialogues.length) {
-                const d = dialogues[storyStep];
-                document.getElementById('speaker').innerText = d.s;
-                document.getElementById('content').innerText = d.c;
-                renderCharacters(d.chars);
-                storyStep++;
-            } else {
-                goWorldMap();
-            }
-        }
-
-        function goWorldMap() {
-            gameState = "WORLDMAP";
-            document.getElementById('main-view').innerHTML = `
-                <div style="text-align:center;">
-                    <h2>천하 월드맵 (기획 1.3)</h2>
-                    <button class="btn" style="width:200px;" onclick="goVillage()">평원현 입성</button>
-                </div>`;
-            document.getElementById('speaker').innerText = "시스템";
-            document.getElementById('content').innerText = "월드맵에서 이동할 도시를 선택하세요.";
-        }
-
-        function goVillage() {
-            gameState = "VILLAGE";
-            document.getElementById('main-view').innerHTML = `
-                <div style="text-align:center;">
-                    <h2>평원현 마을 (기획 1.4)</h2>
-                    <p>유비 일행이 전열을 가다듬습니다.</p>
-                    <button class="btn" style="width:200px; background:#8b0000;" onclick="goBattle()">사수관 전투 출진!</button>
-                </div>`;
-            document.getElementById('content').innerText = "출진 준비를 마치고 전장으로 향하십시오.";
-        }
-
-        function goBattle() {
-            gameState = "BATTLE";
-            document.getElementById('side-panel').classList.remove('hidden');
-            renderIsometricScene(10, 10, "#4c7c4c"); // 전투 배경 (평지)
-            renderCharacters([
-                {icon:'🐎', r:5, c:2, name:'유비', class:'기병', hp:500, side:'ally'},
-                {icon:'🛡️', r:5, c:8, name:'화웅', class:'보병', hp:600, side:'enemy'}
-            ]);
-            document.getElementById('content').innerText = "전투 개시! 적장 화웅을 격파하십시오. (유닛 클릭)";
-        }
-
-        function goEnding() {
-            gameState = "ENDING";
-            document.getElementById('side-panel').classList.add('hidden');
-            document.getElementById('main-view').innerHTML = "<h1>천하 통일 (엔딩)</h1>";
-            document.getElementById('content').innerText = "프로토타입이 종료되었습니다. 클릭하여 메인으로.";
-        }
-
-        // --- 렌더링 엔진 (쿼터뷰) ---
-        function renderIsometricScene(rows, cols, color) {
-            const view = document.getElementById('main-view');
-            view.innerHTML = `<div id="floor" class="iso-floor" style="grid-template-columns: repeat(${cols}, 60px); grid-template-rows: repeat(${rows}, 60px); background:${color};"></div>`;
-            const floor = document.getElementById('floor');
-            for(let i=0; i < rows*cols; i++) floor.innerHTML += '<div class="tile"></div>';
-        }
-
-        function renderCharacters(charList) {
-            const floor = document.getElementById('floor');
-            const existingChars = document.querySelectorAll('.char');
-            existingChars.forEach(c => c.remove());
-
-            charList.forEach(ch => {
-                const div = document.createElement('div');
-                div.className = 'char';
-                div.innerHTML = ch.icon;
-                div.style.gridRow = ch.r;
-                div.style.gridColumn = ch.c;
-                if(ch.side === 'ally') div.style.filter = "drop-shadow(0 0 10px cyan)";
-                if(ch.side === 'enemy') div.style.filter = "drop-shadow(0 0 10px red)";
-                
-                div.onclick = (e) => {
-                    e.stopPropagation();
-                    if(ch.name) {
-                        document.getElementById('unit-name').innerText = ch.name;
-                        document.getElementById('unit-class').innerText = "병과: " + ch.class;
-                        document.getElementById('unit-hp').innerText = `병력: ${ch.hp} / ${ch.hp}`;
-                        if(ch.side === 'enemy') {
-                            alert(ch.name + "을(를) 공격했습니다!");
-                            goEnding();
-                        }
-                    }
-                };
-                floor.appendChild(div);
-            });
-        }
+        // 초기 설정: 화면 크기에 맞춰 엔진 오프셋 조정
+        window.addEventListener('resize', () => {
+            if (Engine) Engine.originX = document.getElementById('map-view').clientWidth / 2;
+        });
     </script>
 </body>
 </html>
