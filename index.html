@@ -1,17 +1,46 @@
-<script src="town.js"></script>
-<script src="battle.js"></script>
-<script>
-    // main 로직: 장면(Scene)에 따라 각 시스템 호출
-    window.addEventListener('keydown', (e) => {
-        if (currentScene === 'TOWN') {
-            TownSystem.update(e.key.toLowerCase());
-            draw();
-        }
-    });
+<!DOCTYPE html>
+<html>
+<head>
+    <title>YGJ - 삼국지 전략</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body { background: #1a1a1a; color: white; text-align: center; font-family: sans-serif; }
+        .login-box { margin-top: 100px; padding: 20px; border: 2px solid #5d4037; display: inline-block; }
+        input { display: block; margin: 10px auto; padding: 10px; width: 200px; }
+        button { padding: 10px 20px; cursor: pointer; background: #5d4037; color: white; border: none; }
+    </style>
+</head>
+<body>
+    <h1>YGJ Online</h1>
+    <div id="start-screen" class="login-box">
+        <h3>로그인 / 회원가입</h3>
+        <input type="email" id="email" placeholder="이메일 주소">
+        <input type="password" id="password" placeholder="비밀번호">
+        <button onclick="handleLogin()">로그인</button>
+        <button onclick="handleSignUp()">회원가입</button>
+    </div>
 
-    canvas.addEventListener('click', (e) => {
-        if (currentScene === 'BATTLE') {
-            // BattleSystem의 클릭 로직 호출
+    <script>
+        // 아까 메모한 키를 여기에 넣으세요!
+        const SUPABASE_URL = 'https://ycizbxlqgqguxxkkxugm.supabase.co';
+        const SUPABASE_KEY = 'YOUR_PUBLISHABLE_KEY_HERE'; 
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        async function handleSignUp() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const { data, error } = await _supabase.auth.signUp({ email, password });
+            if (error) alert(error.message);
+            else alert("가입 성공! 이메일을 확인하세요.");
         }
-    });
-</script>
+
+        async function handleLogin() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const { data, error } = await _supabase.auth.signInWithPassword({ email, password });
+            if (error) alert(error.message);
+            else alert("로그인 성공! 게임을 시작합니다.");
+        }
+    </script>
+</body>
+</html>
