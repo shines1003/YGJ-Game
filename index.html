@@ -1,0 +1,17 @@
+<script src="town.js"></script>
+<script src="battle.js"></script>
+<script>
+    // main 로직: 장면(Scene)에 따라 각 시스템 호출
+    window.addEventListener('keydown', (e) => {
+        if (currentScene === 'TOWN') {
+            TownSystem.update(e.key.toLowerCase());
+            draw();
+        }
+    });
+
+    canvas.addEventListener('click', (e) => {
+        if (currentScene === 'BATTLE') {
+            // BattleSystem의 클릭 로직 호출
+        }
+    });
+</script>
