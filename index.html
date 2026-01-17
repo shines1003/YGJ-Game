@@ -2,35 +2,43 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YGJ Online: 미소녀 영걸전 프로토타입</title>
+    <title>미소녀 영걸전: 온라인</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
-    <div id="game-container">
+    <div id="auth-section" class="ui-overlay">
+        <div class="login-box">
+            <h1 class="dot-title">YOUNGGIRL RPG</h1>
+            <input type="text" id="email" placeholder="이메일">
+            <input type="password" id="pw" placeholder="비밀번호">
+            <button class="btn" onclick="Auth.signIn()">로그인</button>
+            <button class="btn sub-btn" onclick="Auth.signUp()">회원가입</button>
+        </div>
+    </div>
+
+    <div id="game-container" class="hidden">
         <div id="viewport">
-            <div id="map-view">
-                </div>
+            <div id="map-view"></div>
             
             <div id="side-panel" class="ui-panel hidden">
                 <div class="panel-header">부대 정보</div>
-                <div id="unit-portrait"></div> <div class="unit-stats">
-                    <p><span class="label">이름:</span> <span id="info-name">-</span></p>
-                    <p><span class="label">병과:</span> <span id="info-class">-</span></p>
-                    <p><span class="label">병력:</span> <span id="info-hp">-</span></p>
-                    <div class="hp-bar-bg">
-                        <div id="info-hp-fill" class="hp-bar-fill"></div>
-                    </div>
+                <div id="unit-info-display">
+                    <p>이름: <span id="info-name">-</span></p>
+                    <p>병과: <span id="info-class">-</span></p>
+                    <div class="hp-bar-bg"><div id="info-hp-fill" class="hp-bar-fill"></div></div>
                 </div>
             </div>
         </div>
 
         <div id="message-window" onclick="Game.handleInteraction()">
-            <div id="speaker-tag"></div>
-            <div id="content-area">
-                게임을 불러오는 중입니다...
+            <div id="portrait-container">
+                <img id="speaker-portrait" src="" class="hidden">
+            </div>
+            <div id="text-container">
+                <div id="speaker-tag"></div>
+                <div id="content-area">게임을 불러오는 중...</div>
             </div>
             <div id="next-indicator">▼</div>
         </div>
@@ -38,14 +46,7 @@
 
     <script src="js/constants.js"></script>
     <script src="js/engine.js"></script>
-    <script src="js/game.js"></script>
     <script src="js/auth.js"></script>
-
-    <script>
-        // 초기 설정: 화면 크기에 맞춰 엔진 오프셋 조정
-        window.addEventListener('resize', () => {
-            if (Engine) Engine.originX = document.getElementById('map-view').clientWidth / 2;
-        });
-    </script>
+    <script src="js/game.js"></script>
 </body>
 </html>
