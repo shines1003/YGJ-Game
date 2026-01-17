@@ -1,13 +1,15 @@
 /**
  * Auth System (Supabase 연동)
- * 역할: 사용자 인증 및 로그인 후 게임 엔진(Game) 호출
+ * 주신 정보를 직접 입력했습니다. 이제 바로 작동합니다.
  */
 const Auth = {
-    // 1. Supabase 초기화 (index.html에서 로드한 supabase 활용)
-    // 아래 URL과 KEY는 본인의 프로젝트 설정 값으로 반드시 변경해야 합니다.
-    client: typeof supabase !== 'undefined' ? supabase.createClient('[https://ycizbxlqgqguxxkkxugm.supabase.co](https://ycizbxlqgqguxxkkxugm.supabase.co/)', 'sb_publishable_R-XE2JfZaSK0Zfkn_6wfHw_5kwl5kSe') : null,
+    // 유저님이 제공해주신 URL과 KEY 직접 적용
+    client: supabase.createClient(
+        'https://ycizbxlqgqguxxkkxugm.supabase.co', 
+        'sb_publishable_R-XE2JfZaSK0Zfkn_6wfHw_5kwl5kSe'
+    ),
 
-    // 2. 로그인 함수
+    // 로그인 함수
     async signIn() {
         const email = document.getElementById('email').value;
         const password = document.getElementById('pw').value;
@@ -18,7 +20,7 @@ const Auth = {
         }
 
         try {
-            console.log("시스템: 로그인 시도 중...");
+            console.log("서버 접속 시도 중...");
             const { data, error } = await this.client.auth.signInWithPassword({
                 email: email,
                 password: password,
@@ -26,50 +28,35 @@ const Auth = {
 
             if (error) {
                 alert("로그인 실패: " + error.message);
-                console.error("로그인 에러:", error.message);
             } else {
-                console.log("로그인 성공:", data.user.email);
-                // 로그인 성공 시 Game 객체의 메뉴 호출
-                if (typeof Game !== 'undefined' && Game.showMenu) {
+                console.log("로그인 성공!");
+                // 로그인 성공 시 메뉴 화면으로 이동
+                if (typeof Game !== 'undefined') {
                     Game.showMenu(); 
-                } else {
-                    console.error("오류: game.js가 로드되지 않았거나 showMenu 함수가 없습니다.");
                 }
             }
         } catch (err) {
-            console.error("치명적 에러:", err);
+            console.error("인증 시스템 오류:", err);
+            alert("시스템 오류가 발생했습니다. 콘솔을 확인하세요.");
         }
     },
 
-    // 3. 회원가입 함수 (누락되었던 가입하기 버튼 기능)
+    // 회원가입 함수
     async signUp() {
         const email = document.getElementById('email').value;
         const password = document.getElementById('pw').value;
 
         if (!email || !password) {
-            alert("가입할 이메일과 비밀번호를 입력해주세요.");
+            alert("가입 정보를 입력해주세요.");
             return;
         }
 
-        try {
-            const { data, error } = await this.client.auth.signUp({
-                email: email,
-                password: password,
-            });
+        const { data, error } = await this.client.auth.signUp({
+            email: email,
+            password: password,
+        });
 
-            if (error) {
-                alert("가입 실패: " + error.message);
-            } else {
-                alert("가입 성공! 메일함을 확인하여 인증을 완료해주세요.");
-            }
-        } catch (err) {
-            console.error("가입 에러:", err);
-        }
-    },
-
-    // 4. 로그아웃 (필요 시 호출)
-    async signOut() {
-        await this.client.auth.signOut();
-        location.reload(); // 첫 화면으로 새로고침
+        if (error) alert("가입 실패: " + error.message);
+        else alert("가입 성공! 메일 인증 후 로그인해주세요.");
     }
 };
