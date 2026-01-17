@@ -4,7 +4,8 @@ const Game = {
 
     start() {
         this.isStarted = true;
-        document.getElementById('game-container').classList.remove('hidden');
+        document.getElementById('auth-section').style.display = 'none';
+        document.getElementById('game-container').style.display = 'block';
         this.loadScene(this.currentScene);
     },
 
@@ -13,30 +14,33 @@ const Game = {
         const data = STORY_FLOW[sceneId];
         if (!data) return;
 
-        // 맵 그리기
-        Engine.renderMap('map-view', 10, 10, data.type === 'BATTLE' ? 'grass' : 'floor');
-
-        // 대사창 가독성 강제 주입
-        const speaker = document.getElementById('speaker-tag');
-        const content = document.getElementById('content-area');
+        // 1. 대사 및 색상 업데이트
+        const speakerTag = document.getElementById('speaker-tag');
+        const contentArea = document.getElementById('content-area');
         
-        if (speaker) {
-            speaker.innerText = data.speaker || "시스템";
-            speaker.style.color = "#FFD700"; // 금색 강제
-            speaker.style.fontWeight = "bold";
+        speakerTag.innerText = data.speaker || "시스템";
+        contentArea.innerText = data.content || "";
+        
+        // 2. 맵 그리기 (engine.js 호출)
+        if (typeof Engine !== 'undefined') {
+            Engine.renderMap('map-view', 10, 12, 'floor');
         }
-        if (content) {
-            content.innerText = data.content || "";
-            content.style.color = "#FFFFFF"; // 흰색 강제
+
+        // 3. 사이드바 정보 업데이트
+        if (data.speaker === "유비") {
+            document.getElementById('info-name').innerText = "유비";
+            document.getElementById('info-class').innerText = "군웅";
+            document.getElementById('info-hp').innerText = "100/100";
         }
     },
 
-    // 화면 클릭 시 다음 장면으로
+    // 이 함수가 클릭 시 다음 대사로 넘겨주는 핵심입니다!
     handleInteraction() {
-        if (!this.isStarted) return;
         const data = STORY_FLOW[this.currentScene];
         if (data && data.next) {
             this.loadScene(data.next);
+        } else if (data && data.type === "WORLDMAP") {
+            alert("월드맵으로 이동합니다.");
         }
     }
 };
