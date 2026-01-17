@@ -51,7 +51,6 @@
     </style>
 </head>
 <body>
-
     <div id="auth-section">
         <div class="dot-title">YOUNGGIRL RPG</div>
         <div class="login-box">
@@ -59,8 +58,16 @@
             <input type="password" id="pw" placeholder="비밀번호">
             <div class="btn-group">
                 <button class="btn" onclick="Auth.signIn()">로그인</button>
-                <button class="btn" onclick="Auth.signUp()" style="background:#555; color:#fff;">회원가입</button>
+                <button class="btn" onclick="Auth.signUp()" style="background:#555; color:#fff;">가입</button>
             </div>
+        </div>
+    </div>
+
+    <div id="menu-section" class="hidden" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh;">
+        <div class="dot-title" style="font-size: 3em;">메인 메뉴</div>
+        <div class="login-box" style="width: 250px;">
+            <button class="btn" onclick="Game.initNewGame()" style="width: 100%; margin-bottom: 15px;">시작하기</button>
+            <button class="btn" onclick="Game.loadSavedGame()" style="width: 100%; background: #555; color: #fff;">불러오기</button>
         </div>
     </div>
 
@@ -69,12 +76,10 @@
         <div id="side-panel">
             <h3 style="color:#ffd700;">부대 정보</h3>
             <p>이름: <span id="info-name">-</span></p>
-            <p>병과: <span id="info-class">-</span></p>
-            <p>병력: <span id="info-hp">-</span></p>
         </div>
         <div id="message-window" onclick="Game.handleInteraction()">
-            <div id="speaker-tag">시스템</div>
-            <div id="content-area">접속 중입니다...</div>
+            <div id="speaker-tag"></div>
+            <div id="content-area"></div>
         </div>
     </div>
 

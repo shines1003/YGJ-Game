@@ -1,46 +1,50 @@
 const Game = {
     currentScene: "SCENE_START",
-    isStarted: false,
+    isGameActive: false,
 
-    start() {
-        this.isStarted = true;
-        document.getElementById('auth-section').style.display = 'none';
-        document.getElementById('game-container').style.display = 'block';
-        this.loadScene(this.currentScene);
+    // 1. 로그인 성공 직후 (auth.js에서 호출)
+    showMenu() {
+        // 모든 섹션을 일단 숨기고 메뉴만 표시
+        document.getElementById('auth-section').classList.add('hidden');
+        document.getElementById('game-container').classList.add('hidden');
+        document.getElementById('menu-section').classList.remove('hidden');
     },
 
+    // 2. '시작하기' 버튼 클릭 시
+    initNewGame() {
+        document.getElementById('menu-section').classList.add('hidden');
+        document.getElementById('game-container').classList.remove('hidden');
+        this.isGameActive = true;
+        this.loadScene("SCENE_START");
+    },
+
+    // 3. 장면 로드 및 대사 출력
     loadScene(sceneId) {
         this.currentScene = sceneId;
         const data = STORY_FLOW[sceneId];
+        
         if (!data) return;
 
-        // 1. 대사 및 색상 업데이트
-        const speakerTag = document.getElementById('speaker-tag');
-        const contentArea = document.getElementById('content-area');
+        // 대사창 가독성 보정
+        const speaker = document.getElementById('speaker-tag');
+        const content = document.getElementById('content-area');
         
-        speakerTag.innerText = data.speaker || "시스템";
-        contentArea.innerText = data.content || "";
+        if (speaker) speaker.innerText = data.speaker || "시스템";
+        if (content) content.innerText = data.content || "";
         
-        // 2. 맵 그리기 (engine.js 호출)
+        // 맵 렌더링 (engine.js 활용)
         if (typeof Engine !== 'undefined') {
-            Engine.renderMap('map-view', 10, 12, 'floor');
-        }
-
-        // 3. 사이드바 정보 업데이트
-        if (data.speaker === "유비") {
-            document.getElementById('info-name').innerText = "유비";
-            document.getElementById('info-class').innerText = "군웅";
-            document.getElementById('info-hp').innerText = "100/100";
+            Engine.renderMap('map-view', 10, 10, 'floor');
         }
     },
 
-    // 이 함수가 클릭 시 다음 대사로 넘겨주는 핵심입니다!
+    // 4. 대사창 클릭 시 실행 (가장 중요!)
     handleInteraction() {
+        if (!this.isGameActive) return;
+        
         const data = STORY_FLOW[this.currentScene];
         if (data && data.next) {
             this.loadScene(data.next);
-        } else if (data && data.type === "WORLDMAP") {
-            alert("월드맵으로 이동합니다.");
         }
     }
 };
