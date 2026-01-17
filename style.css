@@ -1,38 +1,26 @@
-/* 전체 레이아웃 */
-body { margin: 0; background: #000; overflow: hidden; font-family: 'serif'; }
-
-.auth-overlay {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.9); display: flex; justify-content: center; align-items: center;
-    z-index: 9999; /* 무조건 최상단 */
-}
-
-.login-box {
-    background: #1a1a1a; border: 3px solid #d4af37; padding: 40px;
-    text-align: center; color: #d4af37;
-}
-
-#game-container {
-    width: 960px; height: 640px; margin: auto; position: relative;
-    display: flex; flex-direction: column; border: 2px solid #444;
-}
-
-#viewport { flex: 1; position: relative; background: #111; display: flex; }
-#map-view { flex: 1; position: relative; overflow: hidden; }
-
-/* 2D 도트 최적화 */
-.tile, .sprite, #speaker-portrait {
-    image-rendering: pixelated;
-    position: absolute;
-}
-
-/* 대사창 초상화 레이아웃 */
+/* 대사창 영역 가독성 보정 */
 #message-window {
-    height: 140px; background: #000030; border-top: 3px solid #d4af37;
-    display: flex; padding: 15px; cursor: pointer;
+    background-color: #000040 !important; /* 진한 남색 배경 */
+    color: #ffffff !important;           /* 글자색을 흰색으로 고정 */
+    font-family: 'Malgun Gothic', sans-serif;
+    line-height: 1.6;
 }
-#msg-portrait-container {
-    width: 100px; height: 100px; border: 1px solid #d4af37; margin-right: 15px;
+
+/* 화자(이름) 태그 스타일 */
+#speaker-tag {
+    color: #ffd700 !important;           /* 이름을 밝은 금색으로 표시 */
+    font-weight: bold;
+    font-size: 1.1em;
+    margin-bottom: 5px;
 }
-#speaker-portrait { width: 100px; height: 100px; }
-.hidden { display: none !important; }
+
+/* 대사 내용 텍스트 */
+#content-area {
+    color: #ffffff !important;           /* 내용을 선명한 흰색으로 표시 */
+    font-size: 1em;
+}
+
+/* 화살표 인디케이터 */
+#next-indicator {
+    color: #ffd700 !important;
+}
