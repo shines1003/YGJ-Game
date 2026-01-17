@@ -2,86 +2,105 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>YGJ Online</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         body {
-            margin: 0;
-            padding: 0;
+            margin: 0; padding: 0;
             background-color: #000;
-            /* 배경 이미지가 있다면 여기에 넣겠지만, 일단 검정색으로! */
-            color: #d4af37; /* 삼국지 느낌의 금색 */
+            color: #d4af37;
             font-family: 'serif';
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            overflow: hidden;
         }
 
+        /* 기획서 1.1 스타일 로고 */
+        .logo-area { text-align: center; margin-bottom: 40px; }
         h1 {
-            font-size: 80px;
-            margin: 0;
-            text-shadow: 0 0 20px #ff0000; /* 붉은 광채 */
-            letter-spacing: 15px;
+            font-size: 70px; margin: 0;
+            text-shadow: 0 0 20px #ff0000;
+            letter-spacing: 10px;
         }
+        .subtitle { font-size: 18px; color: #aaa; margin-top: 10px; }
 
-        .subtitle {
-            font-size: 20px;
-            color: #aaa;
-            margin-bottom: 50px;
-        }
-
-        .menu-container {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .menu-item {
-            font-size: 24px;
-            padding: 15px 60px;
-            background: rgba(93, 64, 55, 0.7); /* 고전적인 갈색톤 */
-            border: 2px solid #d4af37;
-            cursor: pointer;
-            transition: all 0.3s;
+        /* 입력창 및 버튼 공통 스타일 */
+        .box {
+            background: rgba(42, 42, 42, 0.8);
+            padding: 30px;
+            border-radius: 10px;
+            border: 1px solid #444;
+            width: 300px;
             text-align: center;
-            color: #fff;
-            text-decoration: none;
         }
+        input {
+            width: 100%; padding: 12px; margin-bottom: 15px;
+            border-radius: 5px; border: 1px solid #d4af37;
+            background: #1a1a1a; color: white; box-sizing: border-box;
+        }
+        .btn {
+            width: 100%; padding: 12px; margin: 5px 0;
+            border: 2px solid #d4af37; border-radius: 5px;
+            background: #5d4037; color: white;
+            font-size: 18px; cursor: pointer; transition: 0.3s;
+        }
+        .btn:hover { background: #d4af37; color: black; }
 
-        .menu-item:hover {
-            background: #d4af37;
-            color: #000;
-            transform: scale(1.1);
-        }
-
-        /* 깜빡이는 효과 */
-        .press-start {
-            margin-top: 30px;
-            animation: blink 1.5s infinite;
-            color: #fff;
-        }
-
-        @keyframes blink {
-            0% { opacity: 0; }
-            50% { opacity: 1; }
-            100% { opacity: 0; }
-        }
+        /* 화면 전환용 숨김 처리 */
+        .hidden { display: none; }
     </style>
 </head>
 <body>
 
-    <h1>YGJ Online</h1>
-    <div class="subtitle">영웅들의 전쟁, 삼국지 전략의 정점</div>
-
-    <div class="menu-container">
-        <div class="menu-item" onclick="alert('게임을 시작합니다!')">게임 시작</div>
-        <div class="menu-item" onclick="alert('설정창입니다.')">환경 설정</div>
-        <div class="menu-item" onclick="window.close()">종료</div>
+    <div class="logo-area">
+        <h1>YGJ Online</h1>
+        <div class="subtitle">영웅들의 전쟁, 삼국지 전략의 정점</div>
     </div>
 
-    <div class="press-start">PRESS ANY KEY TO START</div>
+    <div id="auth-section" class="box">
+        <input type="text" id="email" placeholder="아이디 (이메일 형태)">
+        <input type="password" id="pw" placeholder="비밀번호">
+        <button class="btn" onclick="signIn()">로그인</button>
+        <button class="btn" style="background: #333; font-size: 14px;" onclick="signUp()">회원가입</button>
+    </div>
 
+    <div id="menu-section" class="box hidden">
+        <button class="btn" onclick="alert('새로운 천하 통일을 시작합니다!')">시작하기</button>
+        <button class="btn" onclick="alert('저장된 기록을 불러옵니다.')">불러오기</button>
+        <button class="btn" style="background: #333;" onclick="location.reload()">로그아웃</button>
+    </div>
+
+    <script>
+        // Supabase 설정 (본인의 Key를 꼭 넣으세요!)
+        const S_URL = "https://ycizbxlqgqguxxkkxugm.supabase.co";
+        const S_KEY = "여기에_복사한_anon_key를_넣으세요";
+        const _supabase = supabase.createClient(S_URL, S_KEY);
+
+        async function signUp() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('pw').value;
+            const { data, error } = await _supabase.auth.signUp({ email, password });
+            if (error) alert("가입 실패: " + error.message);
+            else alert("가입 성공! 이제 로그인을 진행하세요.");
+        }
+
+        async function signIn() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('pw').value;
+            const { data, error } = await _supabase.auth.signInWithPassword({ email, password });
+            
+            if (error) {
+                alert("로그인 실패: " + error.message);
+            } else {
+                alert("반갑습니다, 영웅이여!");
+                // 화면 전환 마법
+                document.getElementById('auth-section').classList.add('hidden');
+                document.getElementById('menu-section').classList.remove('hidden');
+            }
+        }
+    </script>
 </body>
 </html>
